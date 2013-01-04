@@ -26,9 +26,16 @@ intInc(int *t) {
 
 int
 main(int argc, const char * argv[]) {
+    List(int)  toto = ListFunc(int, new)();
+
+    printf("%d\n", toto->size(toto));
+    toto->push_back(toto, 1);
+    printf("%d\n", toto->begin->__value);
+    /*
     List(int)    myList = 0;
     
     //myList = ListFunc(int, push_back)(myList, 1);
+    
     myList = list_push_back(int)(myList, 1);
     if (myList == 0) {
         printf("Memory Error\n");
@@ -54,18 +61,12 @@ main(int argc, const char * argv[]) {
     }
     
     printf("size ::%d::\n", ListFunc(int, size)(myList));
-   
-    ListIterator(int) it = myList;
-
-    while ((it = ListFunc(int, next)(it)) != 0) {
-       printf("Test : %d\n", ListFunc(int, value)(it));
-    }
 
     ListFunc(int, apply)(myList, &intDisplay);
     printf("----- INC -----\n");
     ListFunc(int, apply)(myList, &intInc);
     printf("----- AFTER -----\n");
     ListFunc(int, apply)(myList, &intDisplay);
-    return 0;
+ */   return 0;
 }
 
