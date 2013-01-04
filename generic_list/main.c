@@ -42,6 +42,11 @@ main(int argc, const char * argv[]) {
     toto->apply(toto, &intInc);
     printf("Display ----\n");
     toto->apply(toto, &intDisplay);
+    ListIterator(int) it = toto->begin;
+    while (it) {
+      printf("----%d----\n", it->value(it));
+      it = it->next(it);
+    }
     /*
     List(int)    myList = 0;
     

@@ -39,7 +39,6 @@ static t_list##Typename* t_list##Typename##new(); \
 static t_node##Typename* t_list##Typename##push_front(t_list##Typename* list,                   \
                                                         Typename new_value) {                   \
                     t_node##Typename* new_elem = t_node##Typename##new();                                                 \
-                    new_elem = malloc(sizeof(t_node##Typename));                                \
                     if (new_elem == 0) return(0);                                               \
                     memcpy(&new_elem->__value, &new_value, sizeof(new_value));                     \
                     new_elem->__prev = 0; \
