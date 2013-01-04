@@ -31,6 +31,17 @@ main(int argc, const char * argv[]) {
     printf("%d\n", toto->size(toto));
     toto->push_back(toto, 1);
     printf("%d\n", toto->begin->__value);
+    printf("Size : %d\n", toto->size(toto));
+
+
+    toto->push_front(toto, 2);
+    toto->push_back(toto, 4);
+    toto->remove(toto, 1);
+    printf("Display ----\n");
+    toto->apply(toto, &intDisplay);
+    toto->apply(toto, &intInc);
+    printf("Display ----\n");
+    toto->apply(toto, &intDisplay);
     /*
     List(int)    myList = 0;
     

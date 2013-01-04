@@ -16,14 +16,16 @@
 #define ListInit(Typename) typedef struct s_node##Typename {                                                             \
                                   Typename  __value;                                                                            \
                                   Typename  (*value)(); \
-                                  struct s_node##Typename (*next)(struct s_node##Typename*);\
-                                  struct s_node##Typename (*prev)(struct s_node##Typename*); \
+                                  struct s_node##Typename* (*next)(struct s_node##Typename*);\
+                                  struct s_node##Typename* (*prev)(struct s_node##Typename*); \
                                   struct s_node##Typename  *__next;                                                           \
                                   struct s_node##Typename  *__prev;                                                           \
                             } t_node##Typename;                                                                           \
                             typedef struct s_list##Typename {                                    \
-                                    Typename*       (*push_front)(struct s_list##Typename*, Typename); \
-                                    Typename*       (*push_back)(struct s_list##Typename*, Typename); \
+                                    struct s_node##Typename*       (*push_front)(struct s_list##Typename*, Typename); \
+                                    struct s_node##Typename*       (*push_back)(struct s_list##Typename*, Typename); \
+                                    void                           (*remove)(struct s_list##Typename*, Typename); \
+                                    void                           (*apply)(struct s_list##Typename*, void (*)(Typename*)); \
                                     size_t          (*size)(struct s_list##Typename*);         \
                                     size_t          __size;                                   \
                                     Typename        __value;                                  \
@@ -42,6 +44,7 @@ static t_node##Typename* t_list##Typename##push_front(t_list##Typename* list,   
                     memcpy(&new_elem->__value, &new_value, sizeof(new_value));                     \
                     new_elem->__prev = 0; \
                     new_elem->__next = list->begin;                                                      \
+                    list->begin->__prev = new_elem; \
                     list->begin = new_elem;                                                      \
                     list->size++;\
                     if (list->begin->__next == 0) list->end = list->begin; \
@@ -55,6 +58,7 @@ static t_node##Typename* t_list##Typename##push_back(t_list##Typename* list,    
                     memcpy(&new_elem->__value, &new_value, sizeof(new_value));                     \
                     new_elem->__next = 0;                                                         \
                     list->end = new_elem;\
+                    list->__size++;\
                     t_node##Typename* tmp = list->begin;                                               \
                     while (tmp && tmp->__next) tmp = tmp->__next;                                   \
                     if (tmp == 0) { \
@@ -63,7 +67,6 @@ static t_node##Typename* t_list##Typename##push_back(t_list##Typename* list,    
                       return new_elem;}                                              \
                     tmp->__next = new_elem;                                                       \
                     new_elem->__prev = tmp; \
-                    list->__size++;\
                     return new_elem;                                                                \
                 }                                                                               \
                                                                                                 \
@@ -82,18 +85,17 @@ static void t_list##Typename##apply(t_list##Typename* list, void (*func)(Typenam
 static void        t_list##Typename##remove(t_list##Typename* list, Typename pattern) {       \
    t_node##Typename* tmp = list->begin; \
    if (tmp == 0) return ; \
-   if (memcmp(&tmp->__value,&pattern,sizeof(pattern) == 0)) {                                                                          \
+  if (memcmp(&tmp->__value,&pattern,sizeof(pattern)) == 0) {                                                                          \
        list->__size--; \
-       tmp = tmp->__next;                                                                       \
-       free(tmp);                                                                              \
-       list->begin = tmp;\
+       t_node##Typename* old_begin = list->begin;                                                         \
+       list->begin = tmp->__next;                                                                       \
+       free(tmp);\
+       if (old_begin == list->end) list->end = list->begin;     \
        return ;                                                                             \
    }                                                                                            \
-                                                                                                \
    while (tmp && memcmp(&tmp->__value, &pattern, sizeof(pattern)) != 0) {                            \
      tmp = tmp->__next;                                                                         \
    }                                                                                            \
-                                                                                                \
    if (tmp != 0) {                                                                             \
      list->__size--; \
      t_node##Typename* toFree = tmp; \
@@ -114,6 +116,8 @@ static t_list##Typename* t_list##Typename##new() {                              
    t->begin = 0; \
    t->push_front = &t_list##Typename##push_front;                                               \
    t->size = &t_list##Typename##size;                                                           \
+   t->apply = &t_list##Typename##apply; \
+   t->remove = &t_list##Typename##remove; \
    t->__size = 0;                                                                               \
   return t;                                                                                     \
 }                                                                                               \
